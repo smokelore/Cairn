@@ -9,6 +9,8 @@ public class Rock : MonoBehaviour
 	public Rigidbody rigidbody;
 	public Cairn cairn;
 
+	private Cairn emptyCairn;
+
 	public static float balanceCheckDuration = 2;
 	public float balanceCheckTimestamp;
 
@@ -21,12 +23,16 @@ public class Rock : MonoBehaviour
 
 	private void SetCairn(Cairn newCairn)
 	{
-		Debug.Log("Rock [" + transform.name + "] balanced on Cairn [" + cairn.transform.name + "] !");
+		if (newCairn != emptyCairn) 
+		{
+			GameObject.Destroy(emptyCairn);
+		}
 		cairn = newCairn;
-		cairn.AddRock (this);
+		cairn.AddRock(this);
 		rigidbody.constraints = RigidbodyConstraints.FreezeAll;
 		this.gameObject.GetComponent<Renderer>().material.color = Color.blue;
 		isFrozen = true;
+		Debug.Log("Rock [" + transform.name + "] balanced on Cairn [" + cairn.transform.name + "] !");
 	}
 
 	void Update () 
@@ -73,15 +79,34 @@ public class Rock : MonoBehaviour
 		return true;
 	}
 
-	void OnCollisionEnter(Collision collision)
+	void OnCollisionStay(Collision collision)
 	{
 		if (!isFrozen) 
 		{
 			Rock collidingRock = collision.gameObject.GetComponent<Rock>();
-			if (collidingRock != null && collidingRock.isFrozen && collidingRock == collidingRock.cairn.GetTopRock()) 
+			if (collidingRock != null) 
 			{
-				cairn = collidingRock.cairn;
-				balanceCheckTimestamp = Time.time;
+				if (collidingRock.isFrozen && collidingRock.cairn != null && collidingRock == collidingRock.cairn.GetTopRock()) 
+				{
+					cairn = collidingRock.cairn;
+					balanceCheckTimestamp = Time.time;
+				}
+			}
+			else if (collision.gameObject.tag == "Ground")
+			{
+				if (cairn == null) 
+				{
+					if (emptyCairn == null) 
+					{
+						GameObject go = new GameObject ("Cairn");
+						emptyCairn = go.AddComponent<Cairn>();
+					}
+				}
+
+				if (cairn != emptyCairn) 
+				{
+					cairn = emptyCairn;
+				}
 			}
 		}
 	}
