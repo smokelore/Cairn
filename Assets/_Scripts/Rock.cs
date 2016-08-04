@@ -3,8 +3,8 @@ using System.Collections;
 
 public class Rock : MonoBehaviour 
 {
-	public static Vector3 velocityThreshold = Vector3.one;
-	public static Vector3 angularVelocityThreshold = Vector3.one;
+	public static Vector3 velocityThreshold = Vector3.one/50;
+	public static Vector3 angularVelocityThreshold = Vector3.one/50;
 
 	public Rigidbody rigidbody;
 	public Cairn cairn;
@@ -19,6 +19,16 @@ public class Rock : MonoBehaviour
 		rigidbody = GetComponent<Rigidbody>();
 	}
 
+	private void SetCairn(Cairn newCairn)
+	{
+		Debug.Log("Rock [" + transform.name + "] balanced on Cairn [" + cairn.transform.name + "] !");
+		cairn = newCairn;
+		cairn.AddRock (this);
+		rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+		this.gameObject.GetComponent<Renderer>().material.color = Color.blue;
+		isFrozen = true;
+	}
+
 	void Update () 
 	{
 		if (cairn != null && !isFrozen) 
@@ -27,16 +37,18 @@ public class Rock : MonoBehaviour
 			{
 				if (balanceCheckTimestamp + balanceCheckDuration < Time.time) 
 				{
-					Debug.Log("Rock [" + transform.name + "] balanced on Cairn [" + cairn.transform.name + "] !");
-					rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-					cairn.AddRock(this);
-					isFrozen = true;
+					SetCairn (cairn);
+				} 
+				else 
+				{
+					this.gameObject.GetComponent<Renderer>().material.color = Color.Lerp(Color.white, Color.red, (Time.time - balanceCheckTimestamp)/balanceCheckDuration);
 				}
 			}
 			else
 			{
 				Debug.Log("Rock [" + transform.name + "] fell off of Cairn [" + cairn.transform.name + "].");
 				balanceCheckTimestamp = Time.time;
+				this.gameObject.GetComponent<Renderer>().material.color = Color.white;
 			}
 		}
 	}
