@@ -5,7 +5,6 @@ public class Rock : MonoBehaviour
 {
 	public Rigidbody rigidbody;
 	public Cairn cairn;
-    
 
 	public float balanceCheckTimestamp;
 
@@ -13,10 +12,7 @@ public class Rock : MonoBehaviour
 
 	void Start ()
 	{
-        if (rigidbody == null)
-        {
-            rigidbody = GetComponent<Rigidbody>();
-        }
+
 	}
 
 	private void SetCairn(Cairn newCairn)
@@ -44,7 +40,12 @@ public class Rock : MonoBehaviour
 		return true;
 	}
 
-	void OnCollisionStay(Collision collision)
+    void OnCollisionEnter(Collision collision)
+    {
+
+    }
+
+    void OnCollisionStay(Collision collision)
 	{
 
 	}
