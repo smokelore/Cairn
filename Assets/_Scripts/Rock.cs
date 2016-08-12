@@ -4,25 +4,33 @@ using System.Collections;
 public class Rock : MonoBehaviour
 {
 	public Rigidbody rigidbody;
-	public Cairn cairn;
+	private Cairn cairn;
+    private Rock otherRock;
 
 	public float balanceCheckTimestamp;
 
-	public bool isFrozen;
-
 	void Start ()
 	{
+        if (rigidbody == null)
+        {
+            rigidbody = GetComponentInChildren<Rigidbody>();
+        }
+    }
 
-	}
+    void Update()
+    {
 
-	private void SetCairn(Cairn newCairn)
+    }
+
+    private void SetCairn(Cairn cairn)
 	{
+        this.cairn = cairn;
+        balanceCheckTimestamp = 0.0f;
 
-	}
-
-	void Update ()
-	{
-
+        if (cairn != null)
+        {
+            cairn.AddRock(this);
+        }
 	}
 
 	public bool CheckBalance()
@@ -37,21 +45,76 @@ public class Rock : MonoBehaviour
 			return false;
 		}
 
+        if (otherRock == null || otherRock.cairn == null)
+        {
+            return false;
+        }
+
 		return true;
 	}
 
     void OnCollisionEnter(Collision collision)
     {
-
+        if (collision.gameObject.tag == "Ground")
+        {
+            GameObject go = new GameObject("Cairn");
+            SetCairn(go.AddComponent<Cairn>());
+        }
     }
 
     void OnCollisionStay(Collision collision)
 	{
-
-	}
+        if (cairn == null)
+        {
+            Rock collisionRock = collision.gameObject.GetComponent<Rock>();
+            if (collisionRock != null && collisionRock.cairn != null && collisionRock.cairn.GetTopRock() == collisionRock)
+            {
+                if (otherRock == null)
+                {
+                    otherRock = collisionRock;
+                    balanceCheckTimestamp = Time.time;
+                }
+                else if (collisionRock != otherRock)
+                {
+                    SetCairn(null);
+                    otherRock = collisionRock;
+                    balanceCheckTimestamp = Time.time;
+                }
+                else if (CheckBalance())
+                {
+                    if (balanceCheckTimestamp + Constants.Instance.ROCK_BALANCE_CHECK_DURATION < Time.time)
+                    {
+                        SetCairn(otherRock.cairn);
+                    }
+                }
+            }
+        }
+    }
 
 	void OnCollisionExit(Collision collision)
 	{
+        Rock collisionRock = collision.gameObject.GetComponent<Rock>();
+        if (collisionRock != null)
+        {
+            if (collisionRock == otherRock)
+            {
+                SetCairn(null);
+            }
+        }
+    }
+    
+    public string ToHoverString()
+    {
+        string hoverString = "";
+        if (transform != null)
+        {
+            hoverString = transform.name;
+        }
+        if (cairn != null)
+        {
+            hoverString = cairn.transform.name + " : " + hoverString;
+        }
 
-	}
+        return hoverString;
+    }
 }
