@@ -101,7 +101,7 @@ public class Rock : MonoBehaviour
         else if (cairn == null)
         {
             Rock collisionRock = collision.gameObject.GetComponent<Rock>();
-            if (collisionRock != null && collisionRock.cairn != null && collisionRock.cairn.GetTopRock() == collisionRock)
+            if (collisionRock != null && collisionRock.cairn != null)
             {
                 if (otherRock == null)
                 {
