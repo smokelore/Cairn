@@ -17,13 +17,13 @@ public class MouseHoverDisplay : MonoBehaviour
 
     public void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
         text.text = "";
 
         if (Input.GetKey(hoverKeyCode))
         {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
             if (Physics.Raycast(ray, out hit))
             {
                 Component component = GetHoverComponent(hit.transform);

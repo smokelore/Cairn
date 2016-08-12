@@ -8,11 +8,15 @@ public class Cairn : MonoBehaviour
 
 	void Start()
 	{
-		rocks = new List<Rock>();
+
 	}
 
 	public void AddRock(Rock rock)
 	{
+        if (rocks == null)
+        {
+            rocks = new List<Rock>();
+        }
 		rocks.Add(rock);
 		rock.transform.parent = transform;
 	}
