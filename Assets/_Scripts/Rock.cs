@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Rock : MonoBehaviour
 {
-	public Rigidbody rigidbody;
+	public new Rigidbody rigidbody;
 	private Cairn cairn;
     private Cairn emptyCairn;
     private Rock otherRock;

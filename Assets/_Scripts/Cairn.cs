@@ -6,11 +6,6 @@ public class Cairn : MonoBehaviour
 {
 	public List<Rock> rocks;
 
-	void Start()
-	{
-
-	}
-
 	public void AddRock(Rock rock)
 	{
         if (rocks == null)
